@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 import {Link, useNavigate} from 'react-router-dom'
+import { signInStart,signInSuccess,signInFailure } from '../redux/user/userSlice'
+import {useDispatch, useSelector} from 'react-redux'
 
 const Signin = () => {
 
   const [formData,setFormData] = useState({})
-  const [error,setError] = useState(false);
-  const [loading,setLoading] = useState(false)
+  // const [error,setError] = useState(false);
+  // const [loading,setLoading] = useState(false)
+  const {loading,error} = useSelector((state) => state.user)
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({...formData,[e.target.id]:e.target.value})
@@ -15,8 +19,9 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true)
-      setError(false)
+      dispatch(signInStart())
+      // setLoading(true)
+      // setError(false)
       const res = await fetch('/api/auth/signin',{
         method:'POST',
         headers:{
@@ -25,17 +30,21 @@ const Signin = () => {
         body: JSON.stringify(formData)
       });
       const data = await res.json();
-      console.log("API Response:", data); 
+      // console.log("API Response:", data); 
 
-      setLoading(false)
+      // dispatch(signInSuccess(data))
+      // setLoading(false)
       if(data.success===false){
-        setError(true);
+        // setError(true);
+        dispatch(signInFailure(data))
         return;
       }
+      dispatch(signInSuccess(data))
       navigate('/');
     } catch (error) {
-      setLoading(false)
-      setError(true)
+      // setLoading(false)
+      // setError(true)
+      dispatch(signInFailure(error))
     }
     // console.log(data);      bg-cover bg-center
   }
@@ -72,7 +81,8 @@ const Signin = () => {
       </Link>
     </div>
     <div>
-      <p className='text-red-600 text-center mt-5'>{error && 'Somethimg went wrong!'}</p>
+      <p className='text-red-600 text-center mt-5'>
+        {error ? error.message || 'Somethimg went wrong!': ''}</p>
     </div>
     </div>
     </div>
