@@ -13,6 +13,7 @@ const userSlice = createSlice({
             state.loading = true;
         },
         signInSuccess:(state,action) => {
+            console.log("User data in Redux store:", action.payload);
             state.currentUser = action.payload;
             state.loading = false;
             state.error = false;

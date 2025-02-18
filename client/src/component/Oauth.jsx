@@ -24,6 +24,7 @@ const Oauth = () => {
                 }),
             })
             const data = await res.json();
+            console.log("Google Auth Data:", data);
             dispatch(signInSuccess(data))
         } catch (error) {
             console.log('not to google',error);
