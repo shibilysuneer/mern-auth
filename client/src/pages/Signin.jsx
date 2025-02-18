@@ -2,12 +2,11 @@ import React, { useState } from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import { signInStart,signInSuccess,signInFailure } from '../redux/user/userSlice'
 import {useDispatch, useSelector} from 'react-redux'
+import Oauth from '../component/Oauth'
 
 const Signin = () => {
 
   const [formData,setFormData] = useState({})
-  // const [error,setError] = useState(false);
-  // const [loading,setLoading] = useState(false)
   const {loading,error} = useSelector((state) => state.user)
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -20,8 +19,7 @@ const Signin = () => {
     e.preventDefault();
     try {
       dispatch(signInStart())
-      // setLoading(true)
-      // setError(false)
+      
       const res = await fetch('/api/auth/signin',{
         method:'POST',
         headers:{
@@ -30,41 +28,32 @@ const Signin = () => {
         body: JSON.stringify(formData)
       });
       const data = await res.json();
-      // console.log("API Response:", data); 
-
-      // dispatch(signInSuccess(data))
-      // setLoading(false)
+     
       if(data.success===false){
-        // setError(true);
+        
         dispatch(signInFailure(data))
         return;
       }
       dispatch(signInSuccess(data))
       navigate('/');
     } catch (error) {
-      // setLoading(false)
-      // setError(true)
       dispatch(signInFailure(error))
     }
-    // console.log(data);      bg-cover bg-center
   }
 
   return (
   <div className="h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
     <div className="bg-white/10 border border-gray-300 backdrop-blur-lg  rounded-lg p-8 shadow-lg max-w-md w-full">
-    {/* // <div className='p-3 max-w-lg mx-auto' > */}
       <h1 className='text-3xl text-center text-white font-semibold mb-6'>Sign In</h1> 
     <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
      
       <input type="email" placeholder='email'
        id='email'
-        // className='bg-slate-100 p-3 rounded-lg' 
         className="bg-white/20 text-white p-3 rounded-lg outline-none placeholder-gray-200"
        onChange={handleChange}
        />
       <input type="password" placeholder='password'
        id='password'
-        // className='bg-slate-100 p-3 rounded-lg'
         className="bg-white/20 text-white p-3 rounded-lg outline-none placeholder-gray-200"
        onChange={handleChange} 
        />
@@ -72,8 +61,8 @@ const Signin = () => {
             hover:bg-gray-200 transition-all duration-300 disabled:opacity-50 '>
           {loading ? 'Loading' : 'Sign In'}
           </button>
+          <Oauth/>
     </form>
-    {/* <div className='flex gap-2 mt-5'> */}
     <div className="flex gap-2 mt-5  justify-center text-white">
       <p>Dont Have an account?</p>
       <Link to='/signup'>
