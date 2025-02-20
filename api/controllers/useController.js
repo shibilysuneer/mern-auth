@@ -10,13 +10,13 @@ export const test = (req,res) => {
 //update user
 
 export const updateUser = async(req,res,next) => {
-    if(req.user.id !==req.params.id){
-        // return res.status(401).json('you can update only your account')
-        return next(errorHandler(401,'you can update only your account'));
+    if(req.user.id !== req.params.id){
+     return next(errorHandler(401,'you can update only your account'));
+   
     }
     try {
        if(req.body.password){
-        req.body.password =  bcryptjs.hash(req.body.password,10)
+        req.body.password =  bcryptjs.hashSync(req.body.password,10)
        } 
        const updatedUser = await User.findByIdAndUpdate(req.params.id,
         {
@@ -32,6 +32,19 @@ export const updateUser = async(req,res,next) => {
        );
        const {password,...rest} = updatedUser._doc
        res.status(200).json(rest)
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+export const deleteUser = async (req,res,next) =>{
+    if(req.user.id !== req.params.id){
+        return next (errorHandler(401,'you can delete only your account'))
+    }
+    try {
+        await User.findByIdAndDelete(req.params.id)
+        res.status(200).json('User deleted')
     } catch (error) {
         next(error)
     }

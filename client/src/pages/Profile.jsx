@@ -1,20 +1,42 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRef } from 'react'
+import { 
+  updateUserStart,
+  updateUserFailure,
+  updateUserSuccess,
+   deleteUserStart,
+   deleteUserFailure,
+   deleteUserSuccess,
+   signOut,
+    } from '../redux/user/userSlice' 
 
 const Profile = () => {
+  const [image,setImage]=useState(undefined)
 
+  const dispatch = useDispatch();
   const [loading,setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState('') 
-  // const dispatch = useDispatch();
   const fileRef = useRef(null)
   const {currentUser} = useSelector(state => state.user)
+  const [formData,setFormData] = useState({
+    username: currentUser.username,
+    email: currentUser.email,
+    password: "",
+    profilePicture: currentUser.profilePicture,
+  })
+console.log('currrentuser:=',currentUser);
 
-  const handleFileUpload = async (event) => {
-    const file =  event.target.files[0]
-    if(!file) return;
+useEffect(()=>{
+  if(image){
+    handleFileUpload(image);
+  }
+},[image])
 
-  setLoading(true)
+   const handleFileUpload = async (file) => {
+     if(!file) return;
+
+  // setLoading(true)
 
     const data = new FormData()
     data.append('file',file)
@@ -27,36 +49,109 @@ const Profile = () => {
         body:data
       });
       const uploadImageURL = await res.json()
-      console.log(uploadImageURL);
+      console.log('upload data',uploadImageURL);
   
+      if (!res.ok) {
+        throw new Error(
+          data.error?.message || "Upload failed. Please try again."
+        );
+      }
           // Update the image URL in state
       setImageUrl(uploadImageURL.secure_url)
    
-    setLoading(false)
-          
+    setLoading(false)      
   }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  }
+  console.log('infomations--',formData);
  
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  dispatch(updateUserStart());
+
+  try {
+
+    // const updatedData = {
+    //   ...formData,
+    //   profilePicture: imageUrl || currentUser.profilePicture, // Use new image if uploaded
+    // };
+    console.log("API URL:", `/api/user/update/${currentUser?._id}`);
+
+    const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json',
+        // Authorization: `Bearer ${currentUser?.token}`, // Ensure token is passed
+       },
+      //  credentials: 'include', // If using cookies for auth
+      body: JSON.stringify(formData),
+    });
+    console.log("Token:", currentUser?.token);
+    console.log("API URL:", `/api/user/update/${currentUser?._id}`);
+
+
+    const data = await res.json();
+
+    if(data.success === false){
+      dispatch(updateUserFailure(data))
+      return;
+    }
+    
+    dispatch(updateUserSuccess(data)); // Dispatch success action
+  } catch (error) {
+    dispatch(updateUserFailure(error)); // Dispatch failure action
+  }
+};
+const handleDeleteAccount =async() => {
+  try {
+    dispatch(deleteUserStart())
+    const res = await fetch(`/api/user/delete/${currentUser._id}`,{
+      method:'DELETE',
+    })
+    const data = await res.json();
+    if(data.success===false){
+      dispatch(deleteUserFailure(data))
+      return;
+    }
+    dispatch(deleteUserSuccess(data))
+  } catch (error) {
+    dispatch(deleteUserFailure(error))
+
+  }
+}
+const handleSignOut = async() =>{
+  try {
+    await fetch ('/api/user/signout');
+    dispatch(signOut())
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-      <form className='flex flex-col gap-4'>
-        <input type="file" ref={fileRef} hidden accept='image/*' onChange={handleFileUpload}/>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+        <input type="file" ref={fileRef} hidden accept='image/*' onChange={(e)=> setImage(e.target.files[0])}/>
         <img src={imageUrl || currentUser.profilePicture} alt="Profile"
          className='h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2'
          onClick={() => fileRef.current.click()}/> 
         
         <input defaultValue={currentUser.username} type="text" id='username' placeholder='Username'
-         className='bg-slate-100 rounded-lg p-3'/>
+         className='bg-slate-100 rounded-lg p-3'
+         onChange={handleChange}/>
         <input defaultValue={currentUser.email} type="email" id='email' placeholder='Email'
-         className='bg-slate-100 rounded-lg p-3'/>
+         className='bg-slate-100 rounded-lg p-3'
+         onChange={handleChange}/>
         <input type="password" id='password' placeholder='Password'
-         className='bg-slate-100 rounded-lg p-3'/>
+         className='bg-slate-100 rounded-lg p-3'
+         onChange={handleChange}/>
          <button className='bg-cyan-600 text-white p-3 rounded-lg uppercase 
           hover:opacity-95 disabled:opacity-80'>update</button>
       </form>
       <div className='flex justify-between mt-5'>
-        <span className='text-red-600 cursor-pointer'>Delete Account</span>
-        <span className='text-red-600 cursor-pointer'>Sign Out</span>
+        <span onClick={handleDeleteAccount} className='text-red-600 cursor-pointer'>Delete Account</span>
+        <span onClick={handleSignOut} className='text-red-600 cursor-pointer'>Sign Out</span>
       </div>
     </div>
   )
