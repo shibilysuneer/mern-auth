@@ -7,7 +7,7 @@ const Header = () => {
   console.log("Current User Data:", currentUser);
 
   return (
-    <div className='bg-cyan-900 text-white'>
+    <div className='bg-purple-700 text-white'>
       <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
         <Link to='/'>
         <h1 className='font-bold'>Auth App</h1>

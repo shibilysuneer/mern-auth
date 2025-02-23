@@ -151,7 +151,7 @@ const handleSignOut = async() =>{
         <input type="password" id='password' placeholder='Password'
          className='bg-slate-100 rounded-lg p-3'
          onChange={handleChange}/>
-         <button className='bg-cyan-600 text-white p-3 rounded-lg uppercase 
+         <button className='bg-purple-700 text-white p-3 rounded-lg uppercase 
           hover:opacity-95 disabled:opacity-80'>update</button>
       </form>
       <div className='flex justify-between mt-5'>
