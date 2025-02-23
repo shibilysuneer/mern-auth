@@ -18,7 +18,8 @@ const Profile = () => {
   const [loading,setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState('') 
   const fileRef = useRef(null)
-  const {currentUser} = useSelector(state => state.user)
+  const {currentUser,error} = useSelector(state => state.user)
+  const [updateSuccess,setUpdateSuccess] = useState(false)
   const [formData,setFormData] = useState({
     username: currentUser.username,
     email: currentUser.email,
@@ -72,20 +73,22 @@ const handleSubmit = async (e) => {
 
   try {
 
-    // const updatedData = {
-    //   ...formData,
-    //   profilePicture: imageUrl || currentUser.profilePicture, // Use new image if uploaded
-    // };
+    const updatedData = {
+      ...formData,
+      profilePicture: imageUrl || currentUser.profilePicture, // Use new image if uploaded
+    };
     console.log("API URL:", `/api/user/update/${currentUser?._id}`);
 
-    const res = await fetch(`/api/user/update/${currentUser._id}`, {
+    const res = await fetch(`/api/user/update/${currentUser?._id}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json',
-        // Authorization: `Bearer ${currentUser?.token}`, // Ensure token is passed
+      credentials: 'include',
+      headers: { 
+        'Content-Type': 'application/json',
        },
-      //  credentials: 'include', // If using cookies for auth
-      body: JSON.stringify(formData),
+      body: JSON.stringify(updatedData),
+
     });
+    console.log("Submitting update:", updatedData);
     console.log("Token:", currentUser?.token);
     console.log("API URL:", `/api/user/update/${currentUser?._id}`);
 
@@ -97,11 +100,13 @@ const handleSubmit = async (e) => {
       return;
     }
     
-    dispatch(updateUserSuccess(data)); // Dispatch success action
+    dispatch(updateUserSuccess(data));
+    setUpdateSuccess(true)
   } catch (error) {
-    dispatch(updateUserFailure(error)); // Dispatch failure action
+    dispatch(updateUserFailure(error)); 
   }
 };
+
 const handleDeleteAccount =async() => {
   try {
     dispatch(deleteUserStart())
@@ -121,7 +126,7 @@ const handleDeleteAccount =async() => {
 }
 const handleSignOut = async() =>{
   try {
-    await fetch ('/api/user/signout');
+    await fetch ('/api/auth/signout');
     dispatch(signOut())
   } catch (error) {
     console.log(error);
@@ -153,6 +158,9 @@ const handleSignOut = async() =>{
         <span onClick={handleDeleteAccount} className='text-red-600 cursor-pointer'>Delete Account</span>
         <span onClick={handleSignOut} className='text-red-600 cursor-pointer'>Sign Out</span>
       </div>
+      <p className='text-red-700 mt-5'>{error && 'something went wrong'}</p>
+      <p className='text-green-700 mt-5'>{updateSuccess && 'user is updated successfully...'}</p>
+
     </div>
   )
 }

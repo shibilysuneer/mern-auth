@@ -14,12 +14,8 @@ mongoose.connect(process.env.MONGO)
 })
 
 const app = express();
-app.use(express.json());
 app.use(cookieParser());
-
-app.listen(3000, ()=>{
-    console.log('server listening on port 3000');  
-})
+app.use(express.json());
 
 app.use('/api/user',userRoutes)
 app.use('/api/auth',authRoutes)
@@ -30,6 +26,10 @@ app.use((err,req,res,next) => {
     return res.status(statusCode).json({
         success:false,
         message,
-        statusCode
+        statusCode 
     })
+})
+
+app.listen(3000, ()=>{
+    console.log('server listening on port 3000');  
 })
