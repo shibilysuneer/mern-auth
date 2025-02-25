@@ -20,15 +20,22 @@ const Signup = () => {
     setValidationErrors({});
 
     let errors = {};
-    if (!validateUsername(formData.username)) {
+    
+    if (!formData.username) {
+      errors.username = "Username is required";
+    } else if (!validateUsername(formData.username)) {
       errors.username = "Username must be 3-15 alphanumeric characters";
     }
-    if (!validateEmail(formData.email)) {
-      errors.email = "Invalid email format";
-    }
-    if (!validatePassword(formData.password)) {
-      errors.password = "Password must be at least 4 characters, include a number and special characters";
-    }
+     if (!formData.email) {
+        errors.email = "Email is required";
+      } else if (!validateEmail(formData.email)) {
+        errors.email = "Invalid email format";
+      }
+      if (!formData.password) {
+        errors.password = "Password is required";
+      } else if (!validatePassword(formData.password)) {
+        errors.password = "Password must be at least 4 characters, include a number & special character";
+      }
 
     // If errors exist, update state & prevent API call
     if (Object.keys(errors).length > 0) {

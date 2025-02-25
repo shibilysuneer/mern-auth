@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux'
 const AdminSignIn = () => {
 
   const [formData,setFormData] = useState({})
+  const [errors, setErrors] = useState({})
   const {loading,error} = useSelector((state) => state.user)
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -16,6 +17,23 @@ const AdminSignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setErrors({})
+
+    let validationErrors = {}
+
+    if (!formData.email) {
+      validationErrors.email = "Email is required"
+    }
+    if (!formData.password) {
+      validationErrors.password = "Password is required"
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      return
+    }
+
     try {
       dispatch(signInStart())
       
@@ -51,11 +69,13 @@ const AdminSignIn = () => {
         className="bg-white/20 text-white p-3 rounded-lg outline-none placeholder-gray-200"
        onChange={handleChange}
        />
+       {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
       <input type="password" placeholder='password'
        id='password'
         className="bg-white/20 text-white p-3 rounded-lg outline-none placeholder-gray-200"
        onChange={handleChange} 
        />
+        {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
        <button disabled={loading} className='bg-white text-purple-600 px-4 py-2 text-sm font-semibold rounded-full  shadow-md 
             hover:bg-gray-200 transition-all duration-300 disabled:opacity-50 '>
           {loading ? 'Loading' : 'Sign In'}

@@ -22,12 +22,17 @@ const Signin = () => {
     setValidationErrors({});
 
     let errors = {};
-    if (!validateEmail(formData.email)) {
-      errors.email = "Invalid email format";
-    }
-    if (!validatePassword(formData.password)) {
-      errors.password = "Password must be at least 4 characters, include a number & special character";
-    }
+
+    if (!formData.email) {
+    errors.email = "Email is required";
+  } else if (!validateEmail(formData.email)) {
+    errors.email = "Invalid email format";
+  }
+  if (!formData.password) {
+    errors.password = "Password is required";
+  } else if (!validatePassword(formData.password)) {
+    errors.password = "Password must be at least 4 characters, include a number & special character";
+  }
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
