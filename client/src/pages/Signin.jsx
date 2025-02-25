@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import { signInStart,signInSuccess,signInFailure } from '../redux/user/userSlice'
 import {useDispatch, useSelector} from 'react-redux'
+import { validateEmail,validatePassword } from '../../validation'
 import Oauth from '../component/Oauth'
 
 const Signin = () => {
 
   const [formData,setFormData] = useState({})
+  const [validationErrors, setValidationErrors] = useState({});
   const {loading,error} = useSelector((state) => state.user)
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -17,6 +19,21 @@ const Signin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setValidationErrors({});
+
+    let errors = {};
+    if (!validateEmail(formData.email)) {
+      errors.email = "Invalid email format";
+    }
+    if (!validatePassword(formData.password)) {
+      errors.password = "Password must be at least 4 characters, include a number & special character";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
     try {
       dispatch(signInStart())
       
@@ -52,11 +69,13 @@ const Signin = () => {
         className="bg-white/20 text-white p-3 rounded-lg outline-none placeholder-gray-200"
        onChange={handleChange}
        />
+       {validationErrors.email && <p className="text-red-500 text-sm">{validationErrors.email}</p>}
       <input type="password" placeholder='password'
        id='password'
         className="bg-white/20 text-white p-3 rounded-lg outline-none placeholder-gray-200"
        onChange={handleChange} 
        />
+       {validationErrors.password && <p className="text-red-500 text-sm">{validationErrors.password}</p>}
        <button disabled={loading} className='bg-white text-purple-600 px-4 py-2 text-sm font-semibold rounded-full  shadow-md 
             hover:bg-gray-200 transition-all duration-300 disabled:opacity-50 '>
           {loading ? 'Loading' : 'Sign In'}
