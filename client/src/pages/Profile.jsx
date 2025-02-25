@@ -32,15 +32,16 @@ useEffect(()=>{
    const handleFileUpload = async (file) => {
      if(!file) return;
 
-  // setLoading(true)
+const presetKey = import.meta.env.VITE_CLOUDINARY_PRESET;
+const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
     const data = new FormData()
     data.append('file',file)
-    data.append('upload_preset','first_time_use_cloudinary')
-    data.append('cloud_name','dpidgluon')
+    data.append('upload_preset',presetKey)
+    data.append('cloud_name',cloudName)
 
    
-      const res = await fetch('https://api.cloudinary.com/v1_1/dpidgluon/image/upload',{
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,{
         method:'POST',
         body:data
       });
@@ -57,6 +58,7 @@ useEffect(()=>{
    
     setLoading(false)      
   }
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   }

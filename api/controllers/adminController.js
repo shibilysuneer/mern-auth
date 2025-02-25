@@ -11,4 +11,12 @@ export const getUsers = async(req,res,next) =>{
     }
 }
 
-// export const getUser = asyn
+export const getUser = async (req,res,next) => {
+    try {
+        const userId =req.params.id;
+        const user = await User.findById({_id:userId},{password:0})
+        return res.status(200).json(user)
+    } catch (error) {
+        next(error)
+    }
+}

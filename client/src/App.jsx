@@ -27,7 +27,7 @@ const App = () => {
     <Route path='/admin/signin' element={<AdminSignIn/>} />
     <Route element={<AdminPrivateRoute/>}>
     <Route path='/admin/dashboard' element={<Dashboard/>} />
-    <Route path='/admin/dashboard/user/:id' element={<UserDetailView/>} />
+    <Route path='/admin/users/:id' element={<UserDetailView/>} />
     </Route>
    
    </Routes>
