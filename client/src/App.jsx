@@ -5,8 +5,12 @@ import Profile from './pages/Profile'
 import About from './pages/About'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
+import AdminSignIn from './pages/AdminSignIn'
+import Dashboard from './pages/Dashboard'
 import Header from './component/Header'
 import PrivateRoute from './component/PrivateRoute'
+import AdminPrivateRoute from './component/AdminPrivateRoute'
+import UserDetailView from './pages/UserDetailView'
 
 const App = () => {
   return (
@@ -20,7 +24,11 @@ const App = () => {
     <Route element={<PrivateRoute/>}>
     <Route path='/profile' element={<Profile/>} />
     </Route>
-
+    <Route path='/admin/signin' element={<AdminSignIn/>} />
+    <Route element={<AdminPrivateRoute/>}>
+    <Route path='/admin/dashboard' element={<Dashboard/>} />
+    <Route path='/admin/dashboard/user/:id' element={<UserDetailView/>} />
+    </Route>
    
    </Routes>
    </BrowserRouter>

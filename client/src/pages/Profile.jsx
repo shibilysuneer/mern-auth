@@ -20,12 +20,7 @@ const Profile = () => {
   const fileRef = useRef(null)
   const {currentUser,error} = useSelector(state => state.user)
   const [updateSuccess,setUpdateSuccess] = useState(false)
-  const [formData,setFormData] = useState({
-    username: currentUser.username,
-    email: currentUser.email,
-    password: "",
-    profilePicture: currentUser.profilePicture,
-  })
+  const [formData,setFormData] = useState({})
 console.log('currrentuser:=',currentUser);
 
 useEffect(()=>{
@@ -81,7 +76,7 @@ const handleSubmit = async (e) => {
 
     const res = await fetch(`/api/user/update/${currentUser?._id}`, {
       method: 'POST',
-      credentials: 'include',
+      // credentials: 'include',
       headers: { 
         'Content-Type': 'application/json',
        },

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoute.js'
 import authRoutes from './routes/authRoute.js'
+import adminRoute from './routes/adminRoute.js'
 import cookieParser from 'cookie-parser';
 import express from 'express';
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.json());
 
 app.use('/api/user',userRoutes)
 app.use('/api/auth',authRoutes)
+app.use('/api/admin',adminRoute)
 
 app.use((err,req,res,next) => {
     const statusCode = err.statusCode ||500;
@@ -30,6 +32,6 @@ app.use((err,req,res,next) => {
     })
 })
 
-app.listen(3000, ()=>{
-    console.log('server listening on port 3000');  
+app.listen(5000, ()=>{
+    console.log('server listening on port 5000');  
 })
