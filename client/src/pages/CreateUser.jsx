@@ -25,7 +25,7 @@ const CreateUser = () => {
         setLoading(true);
     
         try {
-          const res = await fetch("/api/admin/createUser", {
+          const res = await fetch("/api/admin/users/createuser", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
@@ -36,7 +36,7 @@ const CreateUser = () => {
     
           if (data.success) {
             Swal.fire("Success", "User created successfully!", "success");
-            navigate("/admin/dashboard"); // Redirect to admin dashboard
+            navigate("/admin/dashboard");
           } else {
             Swal.fire("Error", data.message || "Failed to create user", "error");
           }
