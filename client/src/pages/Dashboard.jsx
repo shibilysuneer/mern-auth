@@ -104,7 +104,6 @@ const Dashboard = () => {
             Add New User</Link>
         </div>
 
-      
      <div className="rounded-md border overflow-x-auto ">
         <table className="w-full  border border-white">
           <thead className="bg-purple-600 text-slate-100">

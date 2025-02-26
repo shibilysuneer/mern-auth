@@ -11,6 +11,7 @@ import Header from './component/Header'
 import PrivateRoute from './component/PrivateRoute'
 import AdminPrivateRoute from './component/AdminPrivateRoute'
 import UserDetailView from './pages/UserDetailView'
+import CreateUser from './pages/CreateUser'
 
 const App = () => {
 
@@ -29,6 +30,7 @@ const App = () => {
     <Route path='/admin/signin' element={<AdminSignIn/>} />
     <Route element={<AdminPrivateRoute/>}>
     <Route path='/admin/dashboard' element={<Dashboard/>} />
+    <Route path='/admin/createuser' element={<CreateUser/>} />
     <Route path='/admin/users/:id' element={<UserDetailView/>} />
     </Route>
    
