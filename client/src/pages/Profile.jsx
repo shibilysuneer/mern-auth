@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import Swal from 'sweetalert2'
 import { useRef } from 'react'
 import { 
   updateUserStart,
@@ -105,30 +106,55 @@ const handleSubmit = async (e) => {
 };
 
 const handleDeleteAccount =async() => {
-  try {
-    dispatch(deleteUserStart())
-    const res = await fetch(`/api/user/delete/${currentUser._id}`,{
-      method:'DELETE',
-    })
-    const data = await res.json();
-    if(data.success===false){
-      dispatch(deleteUserFailure(data))
-      return;
-    }
-    dispatch(deleteUserSuccess(data))
-  } catch (error) {
-    dispatch(deleteUserFailure(error))
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    try {
+      dispatch(deleteUserStart())
+      const res = await fetch(`/api/user/delete/${currentUser._id}`,{
+        method:'DELETE',
+      })
+      const data = await res.json();
+      if(data.success===false){
+        dispatch(deleteUserFailure(data))
+        return;
+      }
+      dispatch(deleteUserSuccess(data))
+      Swal.fire("Deleted!", "Your account has been deleted.", "success");
 
-  }
+    } catch (error) {
+      dispatch(deleteUserFailure(error))
+      Swal.fire("Error!", "Something went wrong.", "error");
+    }
+  })
+  
 }
 const handleSignOut = async() =>{
-  try {
-    await fetch ('/api/auth/signout');
-    dispatch(signOut())
-  } catch (error) {
-    console.log(error);
-    
-  }
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You will be signed out!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, Sign Out!",
+  }).then(async (result) => {
+    try {
+      await fetch ('/api/auth/signout');
+      dispatch(signOut())
+      Swal.fire("Signed Out!", "You have been signed out.", "success");
+    } catch (error) {
+      console.log(error);
+      Swal.fire("Error!", "Something went wrong.", "error");
+    }
+  })
+ 
 }
   return (
     <div className='p-3 max-w-lg mx-auto'>

@@ -4,7 +4,21 @@ import { errorHandler } from "../utils/error.js"
 import jwt from 'jsonwebtoken'
 
 export const signup = async (req, res, next) => {
-  const { username, email, password } = req.body
+  const { username, email, password } = req.body;
+
+  const existingUser = await User.findOne({ 
+    $or: [{ username }, { email }] 
+});
+
+if (existingUser) {
+    if (existingUser.username === username) {
+        return next(errorHandler(409, "Username is already taken."));
+    }
+    if (existingUser.email === email) {
+        return next(errorHandler(409, "Email is already taken."));
+    }
+}
+
   const hashPassword = bcryptjs.hashSync(password, 10)
 
   const newUser = new User({
@@ -62,7 +76,6 @@ export const google = async (req, res, next) => {
       const newUser = new User({
         username:
           req.body.name.split(" ").join().toLowerCase() +
-          // Math.floor(Math.random() * 10000).toString(),
           Math.random().toString(36).slice(-8),
         email: req.body.email,
         password: hashedPassword,
