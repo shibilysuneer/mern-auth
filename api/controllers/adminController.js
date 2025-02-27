@@ -22,21 +22,23 @@ export const getUser = async (req,res,next) => {
     }
 }
 
-export const createUser = async(req,res) => {
+export const createUser = async(req,res,next) => {
     try {
         const { username, email, password, isAdmin } = req.body;
         console.log('body::=',req.body);
         if(!username || !email || !password){
-            next(errorHandler(400,"All fields are required"));
-            return;
+            return  next(errorHandler(400,"All fields are required"));
+            
         }
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
         if (existingUser) {
-            next(errorHandler(400,"User already exists"));
-            return;        }
-
-    //     const salt = await bcrypt.genSalt(10);
-    // const hashedPassword = await bcrypt.hash(password, salt);
+            if (existingUser.email === email) {
+                return next(errorHandler(400, "Email already exists"));
+            }
+            if (existingUser.username === username) {
+                return next(errorHandler(400, "Username already exists"));
+            }      
+         }
     
     const hashedPassword =  bcryptjs.hashSync(password,10);
 
@@ -52,6 +54,7 @@ export const createUser = async(req,res) => {
       res.status(201).json({ success: true, message: "User created successfully", user: newUser });
 
     } catch (error) {
+        console.error("Error creating user:", error);
         next(errorHandler(500,"Server error"))
     }
 }
